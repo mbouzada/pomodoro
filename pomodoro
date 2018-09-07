@@ -1,0 +1,185 @@
+#!/bin/bash
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+# (c) Antonio Sánchez León <introlinux[fix@]gmail[fix.]com>
+# (c) Miguel Anxo Bouzada <mbouzada[fix@]gmail[fix.]com>
+# (c) GALPon MinNo Team <minino[fix@]galpon[fix.]org>
+# july 2012
+
+## -
+
+#ACUÉRDATE DE QUE SON pomodoro, minino-pomodoro, kloink.wav, el .desktop y el icono information.png
+
+case $LANG in
+    es*)
+	MINUTOS_DE_TRABAJO="Minutos de trabajo"
+	MINUTOS_DE_DESCANSO="Minutos de descanso"
+	TRABAJANDO="trabajando"
+	DESCANSANDO="descansando"
+	IDIOMA="es"
+	COMIENZA_DESCANSO="¡Tómate un respiro!"
+	COMIENZA_DESCANSO_LARGO="Descanso largo. Ve a sar un paseo."
+	COMIENZA_TRABAJO="¡A trabajar!"
+	COMIENZA_TIEMPO_TRABAJO="Comienza el tiempo de trabajo"
+	COMIENZA_TIEMPO_DESCANSO="Comienza el tiempo de descanso"
+	DESCANSO_LARGO="Descanso largo"
+    ;;
+    gl*)
+	MINUTOS_DE_TRABAJO="Minutos de trabajo"
+	MINUTOS_DE_DESCANSO="Minutos de descanso"
+	TRABAJANDO="trabajando"
+	DESCANSANDO="descansando"
+	IDIOMA="es"
+	COMIENZA_DESCANSO="¡Tómate un respiro!"
+	COMIENZA_DESCANSO_LARGO="Descanso largo. Ve a sar un paseo."
+	COMIENZA_TRABAJO="¡A trabajar!"
+	COMIENZA_TIEMPO_TRABAJO="Comienza el tiempo de trabajo"
+	COMIENZA_TIEMPO_DESCANSO="Comienza el tiempo de descanso"
+	DESCANSO_LARGO="Descanso largo"
+    ;;
+    pt*)
+	MINUTOS_DE_TRABAJO="Minutos de trabajo"
+	MINUTOS_DE_DESCANSO="Minutos de descanso"
+	TRABAJANDO="trabajando"
+	DESCANSANDO="descansando"
+	IDIOMA="es"
+	COMIENZA_DESCANSO="¡Tómate un respiro!"
+	COMIENZA_DESCANSO_LARGO="Descanso largo. Ve a sar un paseo."
+	COMIENZA_TRABAJO="¡A trabajar!"
+	COMIENZA_TIEMPO_TRABAJO="Comienza el tiempo de trabajo"
+	COMIENZA_TIEMPO_DESCANSO="Comienza el tiempo de descanso"
+	DESCANSO_LARGO="Descanso largo"
+    ;;
+
+    ca*)
+	MINUTOS_DE_TRABAJO="Minutos de trabajo"
+	MINUTOS_DE_DESCANSO="Minutos de descanso"
+	TRABAJANDO="trabajando"
+	DESCANSANDO="descansando"
+	IDIOMA="es"
+	COMIENZA_DESCANSO="¡Tómate un respiro!"
+	COMIENZA_DESCANSO_LARGO="Descanso largo. Ve a sar un paseo."
+	COMIENZA_TRABAJO="¡A trabajar!"
+	COMIENZA_TIEMPO_TRABAJO="Comienza el tiempo de trabajo"
+	COMIENZA_TIEMPO_DESCANSO="Comienza el tiempo de descanso"
+	DESCANSO_LARGO="Descanso largo"
+    ;;
+    *)
+	MINUTOS_DE_TRABAJO="Minutes of work"
+	MINUTOS_DE_DESCANSO="Minutes of rest"
+	TRABAJANDO="working"
+	DESCANSANDO="resting"
+	IDIOMA="en"
+	COMIENZA_DESCANSO="¡Have a rest!"
+	COMIENZA_DESCANSO_LARGO="Long rest. Go for a walk."
+	COMIENZA_TRABAJO="¡Lets go to work!"
+	COMIENZA_TIEMPO_TRABAJO="Working time has started"
+	COMIENZA_TIEMPO_DESCANSO="Resting time has started"
+	DESCANSO_LARGO="Long rest"
+    ;;
+esac
+
+#Función para el formato de mensajes OSD
+
+function OSD(){
+aosd_cat --position=1 --y-offset=30 --back-color=yellow\
+	    --fore-color=black --back-opacity=255\
+	    --shadow-color=white --padding=20 --fade-in=20\
+	    -u 7000 -n "arial 12" 
+}
+
+function OSD2(){
+aosd_cat --position=1 --y-offset=30 --back-color=black\
+	    --fore-color=white --back-opacity=255\
+	     --padding=5 --fade-in=20\
+	    -u 3000 -n "arial 12" 
+}
+
+function a_pomodorear(){
+
+# lee minutos de trabajo
+MIN_DE_TRABAJO=`cat ~/.config/pomodoro |sed -n '1p'|cut -d" " -f3`
+
+# lee minutos de descanso
+MIN_DE_DESCANSO=`cat ~/.config/pomodoro |sed -n '4p'|cut -d" " -f3`
+descanso=0
+
+while true
+do
+    aplay /usr/local/share/sounds/kloink.wav 2>/dev/null&
+    espeak -v $IDIOMA "$COMIENZA_TRABAJO" 2>/dev/null &
+    echo "$COMIENZA_TIEMPO_TRABAJO: $MIN_DE_TRABAJO min" | OSD2 &
+    sleep $MIN_DE_TRABAJO;
+
+    descanso=$(($descanso+1))
+
+    if [ "$descanso" = "4" ];then
+    MIN_DE_DESCANSO_LARGO=$(($MIN_DE_DESCANSO*4))
+    aplay /usr/local/share/sounds/kloink.wav  2>/dev/null &
+    echo "$DESCANSO_LARGO: $MIN_DE_DESCANSO_LARGO min" | OSD &
+    espeak -v $IDIOMA "$COMIENZA_DESCANSO_LARGO"  2>/dev/null &
+    sleep $MIN_DE_DESCANSO_LARGO;
+    descanso=0
+	
+    else
+
+    aplay /usr/local/share/sounds/kloink.wav  2>/dev/null & 
+    echo "$COMIENZA_TIEMPO_DESCANSO: $MIN_DE_DESCANSO min" | OSD &
+    espeak -v $IDIOMA "$COMIENZA_DESCANSO"  2>/dev/null &
+    sleep $MIN_DE_DESCANSO;
+
+    fi
+    
+done
+
+}
+
+#TIEMPO=$(($TIEMPO*60))
+
+
+
+case "$1" in
+	trabajo)
+
+	MIN_DE_TRABAJO=`yad --entry --text "$MINUTOS_DE_TRABAJO"`
+	if [ "$MIN_DE_TRABAJO" = "" ];then
+	    exit 0
+	fi
+	rpl "`cat ~/.config/pomodoro |sed -n '1p'`" "item = $MIN_DE_TRABAJO min $TRABAJANDO" ~/.config/pomodoro
+	
+	;;
+
+	descanso)
+
+	MIN_DE_DESCANSO=`yad --entry --text "$MINUTOS_DE_DESCANSO"`
+	if [ "$MIN_DE_DESCANSO" = "" ];then
+	    exit 0
+	fi
+	rpl "`cat ~/.config/pomodoro |sed -n '4p'`" "item = $MIN_DE_DESCANSO min $DESCANSANDO" ~/.config/pomodoro
+
+	;;
+
+	comenzar)
+
+	a_pomodorear
+	;;
+
+	parar)
+
+	killall pomodoro
+	;;
+esac
+
+
