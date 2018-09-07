@@ -1,5 +1,6 @@
 # pomodoro
 Administración do tempo coa Tecnica Pomodoro
+
 * Dependencias
 * *rpl*
 * *yad*
