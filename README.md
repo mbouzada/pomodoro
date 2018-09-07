@@ -5,4 +5,3 @@ Administración do tempo coa Tecnica Pomodoro
 * *yad*
 * *aosd-cat*
 * *aplay e espeak para as mensaxes de voz*
-* *
