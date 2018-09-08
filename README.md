@@ -10,4 +10,5 @@ __Dependencias__
 __Notas:__
 
 `./sounds/kloink.wav` debe ir en `/usr/local/share/[sounds]`
+
 `./pixmaps/pomodoro.png` debe ir en `/usr/local/share[pixmaps]`
